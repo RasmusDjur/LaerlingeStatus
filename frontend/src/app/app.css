@@ -1,0 +1,173 @@
+.tec-header {
+    background-color: #8B35FF;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 24px 0;
+  }
+  
+  .scrolling-text {
+    display: flex;
+    width: max-content;
+    animation: scroll-left 25s linear infinite;
+  }
+  
+  .scrolling-text h1 {
+    margin: 0;
+    padding: 0 4rem; /* spacing between copies */
+    font-size: 34px;
+    font-weight: bold;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    color: white;
+    white-space: nowrap;
+    line-height: 1;
+    display: inline-block;
+  }
+  
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  
+  .upload-section label {
+    font-weight: bold;
+    margin-right: 30px;
+    font-size: 24px;
+  }
+  .upload-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* mellemrum mellem label og knap */
+  }
+  
+  
+  .top-controls {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .upload-section {
+    border: solid rgb(255, 255, 255);
+    border-width: 5px 3px 5px 5px;
+    border-radius: 10px;
+  }
+
+  .dropdown-section {
+    border: solid rgb(255, 255, 255);
+    border-width: 5px 5px 5px 3px;
+    border-radius: 10px;
+    position: relative;
+  }
+  
+  .upload-section,
+  .dropdown-section {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 1rem;
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+     font-family: 'Arial', sans-serif;
+  }
+  
+  .upload-section input[type="file"] {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+  
+  .dropdown-section select {
+    width: 100%;
+    height: 150px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 16px;
+  }
+  
+  .dropdown-wrapper {
+    position: relative;
+  }
+  
+  .dropdown-wrapper button {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #1a1a1a;
+    border: 1px solid #555;
+    padding: 1rem;
+    z-index: 10;
+    width: 100%;
+    max-width: 300px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  
+  .dropdown-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .confirm-button {
+    margin-top: 1rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .dropdown-label-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dropdown-label-row label {
+    font-weight: bold;
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .dropdown-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;
+    padding: 10px;
+    gap: 0.5rem; /* Optional: spacing between label and dropdown */
+  }
+  
+  
+  
+ 
+  
+  
+  
+  
+  
+  

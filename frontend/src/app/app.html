@@ -1,0 +1,61 @@
+<div class="container">
+  <header class="tec-header">
+    <div class="scrolling-text">
+      <h1>TEC STATUS - OPLÆRING, SKOLE, VFU & DELAFTALER</h1>
+      <h1>TEC STATUS - OPLÆRING, SKOLE, VFU & DELAFTALER</h1>
+      <h1>TEC STATUS - OPLÆRING, SKOLE, VFU & DELAFTALER</h1>
+      <h1>TEC STATUS - OPLÆRING, SKOLE, VFU & DELAFTALER</h1>
+    </div>
+  </header>
+
+  <!-- Upload + Dropdown Side By Side -->
+  <div class="top-controls">
+    <!-- Upload -->
+    <section class="upload-section">
+      <div class="upload-row">
+        <label for="fileUpload">Upload en Excel-fil:</label>
+        <input type="file" id="fileUpload" (change)="onFileUpload($event)" accept=".xlsx" />
+      </div>
+    </section>
+
+    <!-- Multi-select Dropdown -->
+    <section class="dropdown-section">
+      <div class="dropdown-label-row">
+        <label>Vælg datasets til sammenligning:</label>
+        <div class="dropdown-wrapper">
+          <button (click)="toggleDropdown()">Vælg filer ▼</button>
+        </div>
+      </div>
+
+      <div class="dropdown-menu" *ngIf="dropdownOpen">
+        <div *ngFor="let file of files" class="dropdown-option">
+          <input
+            type="checkbox"
+            [id]="file"
+            [(ngModel)]="tempSelectedFilesMap[file]"
+          />
+          <label [for]="file">{{ file }}</label>
+        </div>
+        <button class="confirm-button" (click)="confirmSelection()">✔ Bekræft valg</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Ryd-knap -->
+  <button (click)="resetSelections()">RYD</button>
+
+  <!-- Chart -->
+  <section *ngIf="hasSelectedFiles">
+    <div class="dropdown-container">
+      <label for="linjeValg">Vælg linje:</label>
+      <select id="linjeValg" [(ngModel)]="valgtKategori" (change)="onCompareSelectionChange()">
+        <option value="Programmering">Programmering</option>
+        <option value="Infrastruktur">Infrastruktur</option>
+        <option value="IT-supporter">It-supporter</option>
+        <option value="Data og kommunikation">Data og kommunikation</option>
+      </select>
+    </div>
+
+    <canvas class="Graf" #chartCanvas width="900" height="700"></canvas>
+  </section>
+</div>
