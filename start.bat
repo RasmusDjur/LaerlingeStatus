@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set "PROJECT_ROOT=%USERPROFILE%\Documents\GitHub\GruppeOpg"
+set "PROJECT_ROOT=%USERPROFILE%\Documents\GitHub\LaerlingeStatus"
 
 echo Starter backend...
 start cmd /k "cd /d %PROJECT_ROOT%\backend && node index.js"
