@@ -1,0 +1,7 @@
+# Node.js
+node_modules/
+.env
+
+# Prisma
+prisma/dev.db
+
