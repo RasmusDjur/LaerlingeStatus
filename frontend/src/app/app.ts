@@ -45,6 +45,9 @@ export class App {
 
   @ViewChild('chartCanvas') chartRef!: ElementRef<HTMLCanvasElement>;
 
+    // ✅ NY: Til Shift-click valg
+    lastCheckedIndex: number | null = null;
+
   constructor() {
     this.fetchUploadedFiles();
   }
@@ -107,15 +110,17 @@ resetSelections(): void {
   console.log('tempSelectedFilesMap efter reset:', this.tempSelectedFilesMap);
 }
 
-  async onFileUpload(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
+async onFileUpload(event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement;
+  const files = input.files;
+  if (!files || files.length === 0) return;
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
 
     if (this.files.includes(file.name)) {
-      alert(`Filen "${file.name}" er allerede uploadet.`);
-      input.value = '';
-      return;
+      console.warn(`Filen "${file.name}" er allerede uploadet – springes over.`);
+      continue;
     }
 
     const formData = new FormData();
@@ -127,38 +132,57 @@ resetSelections(): void {
         body: formData,
       });
       await response.json();
-
-      // Opdater fil-listen EFTER uploaden er færdig
-      await this.fetchUploadedFiles();
     } catch (error) {
-      console.error('Upload failed:', error);
+      console.error(`Upload failed for "${file.name}":`, error);
     }
-
-    input.value = '';
   }
 
-  fetchUploadedFiles(): Promise<void> {
-    return fetch('http://localhost:3001/upload')
-      .then(response => response.json())
-      .then((data: any[]) => {
-        if (typeof data[0] === 'string') {
-          this.files = data;
-        } else {
-          this.files = data.map(file => file.name);
-        }
+  // Opdater listen over uploadede filer efter alle uploads
+  await this.fetchUploadedFiles();
+  input.value = '';
+}
 
-        this.files.forEach(f => {
-          if (!(f in this.selectedFilesMap)) {
-            this.selectedFilesMap[f] = false;
-          }
-        });
 
-        this.onCompareSelectionChange();
-      })
-      .catch(error => {
-        console.error('Failed to fetch uploaded files:', error);
+fetchUploadedFiles(): Promise<void> {
+  return fetch('http://localhost:3001/upload')
+    .then(response => response.json())
+    .then((data: any[]) => {
+      if (typeof data[0] === 'string') {
+        this.files = data;
+      } else {
+        this.files = data.map(file => file.name);
+      }
+
+      // ✅ Sortér filerne efter år og uge
+      this.files.sort((a, b) => {
+        const getWeekYear = (str: string): { week: number, year: number } => {
+          const match = str.match(/uge\s*(\d{1,2})\s*[-–]\s*(\d{4})/i);
+          return {
+            week: match ? parseInt(match[1], 10) : 0,
+            year: match ? parseInt(match[2], 10) : 0,
+          };
+        };
+
+        const aDate = getWeekYear(a);
+        const bDate = getWeekYear(b);
+
+        if (aDate.year !== bDate.year) return aDate.year - bDate.year;
+        return aDate.week - bDate.week;
       });
-  }
+
+      this.files.forEach(f => {
+        if (!(f in this.selectedFilesMap)) {
+          this.selectedFilesMap[f] = false;
+        }
+      });
+
+      this.onCompareSelectionChange();
+    })
+    .catch(error => {
+      console.error('Failed to fetch uploaded files:', error);
+    });
+}
+
 
   onCompareSelectionChange(): void {
     const selectedFiles = this.files.filter(f => this.selectedFilesMap[f]);
@@ -282,4 +306,23 @@ resetSelections(): void {
       }
     }
   }
+  onCheckboxClick(event: MouseEvent, index: number): void {
+    if (event.shiftKey && this.lastCheckedIndex !== null) {
+      const [start, end] = [
+        Math.min(this.lastCheckedIndex, index),
+        Math.max(this.lastCheckedIndex, index)
+      ];
+  
+      for (let i = start; i <= end; i++) {
+        const file = this.files[i];
+        this.tempSelectedFilesMap[file] = true;
+      }
+    } else {
+      const file = this.files[index];
+      this.tempSelectedFilesMap[file] = !this.tempSelectedFilesMap[file];
+    }
+  
+    this.lastCheckedIndex = index;
+  }
+  
 }

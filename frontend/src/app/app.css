@@ -75,7 +75,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-     font-family: 'Arial', sans-serif;
+    font-family: 'Arial', sans-serif;
   }
   
   .upload-section input[type="file"] {
@@ -99,9 +99,10 @@
   
   .dropdown-wrapper {
     position: relative;
+    width: 150px;
   }
   
-  .dropdown-wrapper button {
+  .dropdown-wrapper > button {
     background-color: #333;
     color: white;
     border: 1px solid #555;
@@ -111,6 +112,10 @@
     font-size: 16px;
   }
   
+  .dropdown-menu .dropdown-option label {
+    font-size: 16px !important;
+  }
+
   .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -120,9 +125,11 @@
     padding: 1rem;
     z-index: 10;
     width: 100%;
-    max-width: 300px;
+    max-width: 200px;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    max-height: 300px; 
+    overflow-y: auto; 
   }
   
   .dropdown-option {
@@ -131,9 +138,9 @@
     margin-bottom: 0.5rem;
   }
   
-  .confirm-button {
+  .dropdown-menu .confirm-button {
     margin-top: 1rem;
-    background-color: #4CAF50;
+    background-color: #8B35FF;
     color: white;
     border: none;
     padding: 0.4rem 1rem;
@@ -161,6 +168,12 @@
     padding: 10px;
     gap: 0.5rem; /* Optional: spacing between label and dropdown */
   }
+
+  .Graf {
+    display: block;
+    margin: 0 auto;
+  }
+  
   
   
   
