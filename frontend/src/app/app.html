@@ -14,7 +14,7 @@
     <section class="upload-section">
       <div class="upload-row">
         <label for="fileUpload">Upload en Excel-fil:</label>
-        <input type="file" id="fileUpload" (change)="onFileUpload($event)" accept=".xlsx" />
+        <input type="file" id="fileUpload" (change)="onFileUpload($event)" accept=".xlsx" multiple />
       </div>
     </section>
 
@@ -22,23 +22,26 @@
     <section class="dropdown-section">
       <div class="dropdown-label-row">
         <label>Vælg datasets til sammenligning:</label>
+
         <div class="dropdown-wrapper">
           <button (click)="toggleDropdown()">Vælg filer ▼</button>
-        </div>
-      </div>
 
-      <div class="dropdown-menu" *ngIf="dropdownOpen">
-        <div *ngFor="let file of files" class="dropdown-option">
-          <input
-            type="checkbox"
-            [id]="file"
-            [(ngModel)]="tempSelectedFilesMap[file]"
-          />
-          <label [for]="file">{{ file }}</label>
+          <div class="dropdown-menu" *ngIf="dropdownOpen">
+            <div *ngFor="let file of files; let i = index" class="dropdown-option">
+              <input
+                type="checkbox"
+                [id]="file"
+                [(ngModel)]="tempSelectedFilesMap[file]"
+                (click)="onCheckboxClick($event, i)"
+              />
+              <label [for]="file">{{ file }}</label>
+            </div>
+            <button class="confirm-button" (click)="confirmSelection()">✔ Bekræft valg</button>
+          </div>
         </div>
-        <button class="confirm-button" (click)="confirmSelection()">✔ Bekræft valg</button>
       </div>
     </section>
+    
   </div>
 
   <!-- Ryd-knap -->
@@ -56,6 +59,6 @@
       </select>
     </div>
 
-    <canvas class="Graf" #chartCanvas width="900" height="700"></canvas>
+    <canvas class="Graf" #chartCanvas width="1400" height="700"></canvas>
   </section>
 </div>
