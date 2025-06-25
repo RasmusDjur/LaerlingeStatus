@@ -1,13 +1,29 @@
-# Node.js
+# Node dependencies
 node_modules/
-.env
 
-# Prisma
-prisma/dev.db
-
-
+# Build output
+dist/
+out-tsc/
 .angular/
 
-node_modules/
-dist/
-.vite/
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor & OS filer
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Vite cache
+node_modules/.vite/
+
+# Package lock
+package-lock.json
