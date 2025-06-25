@@ -209,7 +209,7 @@ fetchUploadedFiles(): Promise<void> {
   }
 
   renderChart(data: any[]): void {
-    const værdityper = ['oplæring', 'skole', 'vfo', 'delaftale', 'iAlt', 'muligePåVej', 'oversigt2023'];
+    const værdityper = ['oplæring', 'skole', 'vfo', 'delaftale', 'iAlt', 'muligePåVej'];
 
     // Sortér filerne efter uge og år
     data.sort((a, b) => {
@@ -229,13 +229,12 @@ fetchUploadedFiles(): Promise<void> {
     });
 
     const farver: { [key: string]: string } = {
-      'oplæring': '#3498DB',
-      'skole': '#5DADE2',
-      'vfo': '#7D5FFF',
-      'delaftale': '#BA55D3',
-      'iAlt': '#9966CC',
-      'muligePåVej': '#800080',
-      'oversigt2023': '#4B0082',
+      'oplæring': '#1f77b4',    // Blue
+      'skole': '#ff7f0e',      // Orange
+      'vfo': '#2ca02c',        // Green
+      'delaftale': '#d62728',  // Red
+      'iAlt': '#9467bd',       // Purple
+      'muligePåVej': '#8c564b' // Brown
     };
 
     const labels = data.map(file => file.file); // fx 'uge 40 - 2024'
@@ -301,7 +300,6 @@ fetchUploadedFiles(): Promise<void> {
         case 'delaftale': return 'Delaftale';
         case 'iAlt': return 'I alt';
         case 'muligePåVej': return 'Mulige på vej';
-        case 'oversigt2023': return 'Oversigt 2023';
         default: return valueType;
       }
     }
