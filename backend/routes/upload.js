@@ -8,25 +8,42 @@ const prisma = new PrismaClient();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// POST: Upload fil
 router.post('/', upload.single('file'), async (req, res) => {
   try {
     const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const b3 = worksheet['B3']?.v || '';
-    const ugeMatch = b3.match(/uge\s*\d+\s*[-–]\s*\d{4}/i);
+    const ugeMatch = b3.match(/uge\s*\d+\s*[-–]\s*(\d{4})/i);
+    const year = ugeMatch ? parseInt(ugeMatch[1], 10) : new Date().getFullYear();
     const fileName = ugeMatch ? ugeMatch[0].trim() : new Date().toISOString();
 
-    const rows = xlsx.utils.sheet_to_json(worksheet, { header: 1 }).slice(5, 9);
+    // 🚫 Tjek om fil allerede findes
+    const existing = await prisma.uploadedFile.findUnique({
+      where: { name: fileName },
+    });
+
+    if (existing) {
+      return res.status(400).json({ error: 'Denne fil er allerede uploadet.' });
+    }
+
+    let rows = [];
+    const useMultipleRows = year >= 2024;
+
+    if (useMultipleRows) {
+      rows = xlsx.utils.sheet_to_json(worksheet, { header: 1 }).slice(5, 9);
+    } else {
+      const allRows = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+      rows = [allRows[5]];
+    }
+
     const statsData = rows.map(row => ({
       name: row[1]?.toString().trim() || 'Ukendt',
       oplæring: Number(row[2]) || 0,
       skole: Number(row[3]) || 0,
-      vfo: Number(row[4]) || 0,
+      vfo: Number(row[4]) || 0,  
       delaftale: Number(row[5]) || 0,
       iAlt: Number(row[6]) || 0,
       muligePåVej: Number(row[7]) || 0,
-      oversigt2023: Number(row[8]) || 0,
     }));
 
     const uploadedFile = await prisma.uploadedFile.create({
@@ -43,6 +60,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     res.status(500).json({ error: 'Upload failed' });
   }
 });
+
 
 // GET: Hent filnavne
 router.get('/', async (req, res) => {
@@ -76,7 +94,6 @@ router.post('/compare', async (req, res) => {
         delaftale: stat.delaftale,
         iAlt: stat.iAlt,
         muligePåVej: stat.muligePåVej,
-        oversigt2023: stat.oversigt2023,
       })),
     }));
 
