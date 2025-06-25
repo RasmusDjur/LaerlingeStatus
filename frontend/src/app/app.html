@@ -18,47 +18,47 @@
       </div>
     </section>
 
-    <!-- Multi-select Dropdown -->
+    <!-- Multi-select Dropdown for år -->
     <section class="dropdown-section">
       <div class="dropdown-label-row">
-        <label>Vælg datasets til sammenligning:</label>
+        <label>Vælg årstal til sammenligning:</label>
 
         <div class="dropdown-wrapper">
-          <button (click)="toggleDropdown()">Vælg filer ▼</button>
+          <button (click)="toggleDropdown()">Vælg år ▼</button>
 
           <div class="dropdown-menu" *ngIf="dropdownOpen">
-            <div *ngFor="let file of files; let i = index" class="dropdown-option">
+            <div *ngFor="let year of years; let i = index" class="dropdown-option">
               <input
                 type="checkbox"
-                [id]="file"
-                [(ngModel)]="tempSelectedFilesMap[file]"
+                [id]="year"
+                [(ngModel)]="tempSelectedYearsMap[year]"
                 (click)="onCheckboxClick($event, i)"
               />
-              <label [for]="file">{{ file }}</label>
+              <label [for]="year">{{ year }}</label>
             </div>
             <button class="confirm-button" (click)="confirmSelection()">✔ Bekræft valg</button>
           </div>
         </div>
       </div>
     </section>
-    
   </div>
 
   <!-- Ryd-knap -->
   <button (click)="resetSelections()">RYD</button>
 
-  <!-- Chart -->
-  <section *ngIf="hasSelectedFiles">
+  <!-- Chart og kategori-valg -->
+  <section *ngIf="hasSelectedYears">
     <div class="dropdown-container">
       <label for="linjeValg">Vælg linje:</label>
       <select id="linjeValg" [(ngModel)]="valgtKategori" (change)="onCompareSelectionChange()">
+        <option value="Data og kommunikation">Data og kommunikation</option>
         <option value="Programmering">Programmering</option>
         <option value="Infrastruktur">Infrastruktur</option>
         <option value="IT-supporter">It-supporter</option>
-        <option value="Data og kommunikation">Data og kommunikation</option>
       </select>
     </div>
 
     <canvas class="Graf" #chartCanvas width="1400" height="700"></canvas>
   </section>
 </div>
+
