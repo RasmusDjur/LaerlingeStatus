@@ -8,3 +8,6 @@ prisma/dev.db
 
 .angular/
 
+node_modules/
+dist/
+.vite/
