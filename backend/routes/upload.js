@@ -49,6 +49,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     const uploadedFile = await prisma.uploadedFile.create({
       data: {
         name: fileName,
+        year: year,
         stats: { create: statsData },
       },
       include: { stats: true },
@@ -62,25 +63,34 @@ router.post('/', upload.single('file'), async (req, res) => {
 });
 
 
-// GET: Hent filnavne
+// GET: Returner unikke årstal
 router.get('/', async (req, res) => {
   try {
     const uploads = await prisma.uploadedFile.findMany({
-      orderBy: { id: 'desc' },
+      select: { year: true },
+      distinct: ['year'],
+      orderBy: { year: 'desc' },
     });
-    res.json(uploads);
+
+    const years = uploads.map(u => u.year.toString());
+    res.json(years);
   } catch (err) {
-    console.error('Fejl ved hentning af uploads:', err);
-    res.status(500).json({ error: 'Kunne ikke hente uploads' });
+    console.error('Fejl ved hentning af år:', err);
+    res.status(500).json({ error: 'Kunne ikke hente år' });
   }
 });
 
-// POST: Compare
+// POST: Compare (baseret på valgte årstal)
 router.post('/compare', async (req, res) => {
-  const { filenames } = req.body;
+  const { years } = req.body; // forventer fx: ["2023", "2024"]
+
   try {
     const files = await prisma.uploadedFile.findMany({
-      where: { name: { in: filenames } },
+      where: {
+        year: {
+          in: years.map(Number),
+        },
+      },
       include: { stats: true },
     });
 
@@ -103,6 +113,7 @@ router.post('/compare', async (req, res) => {
     res.status(500).json({ error: 'Kunne ikke hente data' });
   }
 });
+
 
 module.exports = router;
 

@@ -16,9 +16,9 @@ import {
 } from 'chart.js';
 
 Chart.register(
-  BarController, 
-  BarElement, 
-  CategoryScale, 
+  BarController,
+  BarElement,
+  CategoryScale,
   LinearScale,
   Tooltip,
   Legend,
@@ -36,168 +36,109 @@ Chart.register(
   styleUrl: './app.css',
 })
 export class App {
-  files: string[] = [];
-  selectedFilesMap: { [filename: string]: boolean } = {};
-  valgtKategori: string = 'Programmering';
+  years: string[] = [];
+  selectedYearsMap: { [year: string]: boolean } = {};
+  valgtKategori: string = 'Data og kommunikation';
   dropdownOpen = false;
-  tempSelectedFilesMap: { [filename: string]: boolean } = {};
+  tempSelectedYearsMap: { [year: string]: boolean } = {};
   chart!: Chart;
 
   @ViewChild('chartCanvas') chartRef!: ElementRef<HTMLCanvasElement>;
 
-    // ✅ NY: Til Shift-click valg
-    lastCheckedIndex: number | null = null;
+  lastCheckedIndex: number | null = null;
 
   constructor() {
-    this.fetchUploadedFiles();
+    this.fetchUploadedYears();
   }
 
   toggleDropdown(): void {
-    this.tempSelectedFilesMap = { ...this.selectedFilesMap };
+    this.tempSelectedYearsMap = { ...this.selectedYearsMap };
     this.dropdownOpen = !this.dropdownOpen;
   }
 
   confirmSelection(): void {
-    this.selectedFilesMap = { ...this.tempSelectedFilesMap };
-    this.tempSelectedFilesMap = {}; // Nulstil dropdown-valgene
+    this.selectedYearsMap = { ...this.tempSelectedYearsMap };
+    this.tempSelectedYearsMap = {};
     this.dropdownOpen = false;
     this.onCompareSelectionChange();
   }
 
-  get hasSelectedFiles(): boolean {
-    return Object.values(this.selectedFilesMap).some(val => val);
+  get hasSelectedYears(): boolean {
+    return Object.values(this.selectedYearsMap).some(val => val);
   }
 
-  // Reset selections (clear files and dropdown selections)
-resetSelections(): void {
-  console.log('Resetting everything...');
+  resetSelections(): void {
+    this.selectedYearsMap = {};
+    this.tempSelectedYearsMap = {};
+    this.dropdownOpen = false;
+    this.valgtKategori = 'Programmering';
 
-  // 1. Ryd alle valgte filer
-  this.selectedFilesMap = {};
-  this.tempSelectedFilesMap = {}; // Ryd midlertidige dropdown-valg
-
-  // 2. Luk dropdown-menuen hvis den er åben
-  this.dropdownOpen = false;
-  console.log('Dropdown Open:', this.dropdownOpen);
-
-  // 3. Ryd kategori-valg
-  this.valgtKategori = 'Programmering'; // Reset kategori
-  console.log('Valgt Kategori efter reset:', this.valgtKategori);
-
-  // 4. Hvis der er et chart, fjern det
-  if (this.chart) {
-    console.log('Destroying chart...');
-    this.chart.destroy();  // Ryd chartet
-    this.chart = null!;  // Fjern chartet
-    console.log('Chart destroyed');
-  }
-
-  // 5. Reset dropdown data
-  this.files.forEach(f => {
-    this.selectedFilesMap[f] = false;  // Fjern markering af alle filer i dropdown
-    this.tempSelectedFilesMap[f] = false;  // Fjern midlertidige markeringer
-  });
-
-  // 6. Force a refresh of the UI
-  this.files = [];  // Tøm filerne (hvis nødvendigt)
-  console.log('Files after reset:', this.files);
-
-  // 7. Tøm dropdown
-  this.dropdownOpen = false;
-
-  // Bekræft status efter reset
-  console.log('selectedFilesMap efter reset:', this.selectedFilesMap);
-  console.log('tempSelectedFilesMap efter reset:', this.tempSelectedFilesMap);
-}
-
-async onFileUpload(event: Event): Promise<void> {
-  const input = event.target as HTMLInputElement;
-  const files = input.files;
-  if (!files || files.length === 0) return;
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-
-    if (this.files.includes(file.name)) {
-      console.warn(`Filen "${file.name}" er allerede uploadet – springes over.`);
-      continue;
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null!;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const response = await fetch('http://localhost:3001/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      await response.json();
-    } catch (error) {
-      console.error(`Upload failed for "${file.name}":`, error);
-    }
-  }
-
-  // Opdater listen over uploadede filer efter alle uploads
-  await this.fetchUploadedFiles();
-  input.value = '';
-}
-
-
-fetchUploadedFiles(): Promise<void> {
-  return fetch('http://localhost:3001/upload')
-    .then(response => response.json())
-    .then((data: any[]) => {
-      if (typeof data[0] === 'string') {
-        this.files = data;
-      } else {
-        this.files = data.map(file => file.name);
-      }
-
-      // ✅ Sortér filerne efter år og uge
-      this.files.sort((a, b) => {
-        const getWeekYear = (str: string): { week: number, year: number } => {
-          const match = str.match(/uge\s*(\d{1,2})\s*[-–]\s*(\d{4})/i);
-          return {
-            week: match ? parseInt(match[1], 10) : 0,
-            year: match ? parseInt(match[2], 10) : 0,
-          };
-        };
-
-        const aDate = getWeekYear(a);
-        const bDate = getWeekYear(b);
-
-        if (aDate.year !== bDate.year) return aDate.year - bDate.year;
-        return aDate.week - bDate.week;
-      });
-
-      this.files.forEach(f => {
-        if (!(f in this.selectedFilesMap)) {
-          this.selectedFilesMap[f] = false;
-        }
-      });
-
-      this.onCompareSelectionChange();
-    })
-    .catch(error => {
-      console.error('Failed to fetch uploaded files:', error);
+    this.years.forEach(y => {
+      this.selectedYearsMap[y] = false;
+      this.tempSelectedYearsMap[y] = false;
     });
-}
 
+    this.years = [];
+  }
+
+  async onFileUpload(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const files = input.files;
+    if (!files || files.length === 0) return;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await fetch('http://localhost:3001/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        await response.json();
+      } catch (error) {
+        console.error(`Upload failed for "${file.name}":`, error);
+      }
+    }
+
+    await this.fetchUploadedYears();
+    input.value = '';
+  }
+
+  fetchUploadedYears(): Promise<void> {
+    return fetch('http://localhost:3001/upload')
+      .then(response => response.json())
+      .then((data: string[]) => {
+        this.years = data.sort();
+        this.years.forEach(y => {
+          if (!(y in this.selectedYearsMap)) {
+            this.selectedYearsMap[y] = false;
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Failed to fetch uploaded years:', error);
+      });
+  }
 
   onCompareSelectionChange(): void {
-    const selectedFiles = this.files.filter(f => this.selectedFilesMap[f]);
+    const selectedYears = this.years.filter(y => this.selectedYearsMap[y]);
 
-    if (selectedFiles.length === 0) {
+    if (selectedYears.length === 0) {
       if (this.chart) this.chart.destroy();
       return;
     }
 
     fetch('http://localhost:3001/upload/compare', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ filenames: selectedFiles }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ years: selectedYears }),
     })
       .then(response => response.json())
       .then((data) => {
@@ -211,7 +152,6 @@ fetchUploadedFiles(): Promise<void> {
   renderChart(data: any[]): void {
     const værdityper = ['oplæring', 'skole', 'vfo', 'delaftale', 'iAlt', 'muligePåVej'];
 
-    // Sortér filerne efter uge og år
     data.sort((a, b) => {
       const getWeekYear = (str: string): { week: number, year: number } => {
         const match = str.match(/uge\s*(\d+)\s*[-–]\s*(\d{4})/i);
@@ -223,21 +163,20 @@ fetchUploadedFiles(): Promise<void> {
 
       const aDate = getWeekYear(a.file);
       const bDate = getWeekYear(b.file);
-
       if (aDate.year !== bDate.year) return aDate.year - bDate.year;
       return aDate.week - bDate.week;
     });
 
     const farver: { [key: string]: string } = {
-      'oplæring': '#1f77b4',    // Blue
-      'skole': '#ff7f0e',      // Orange
-      'vfo': '#2ca02c',        // Green
-      'delaftale': '#d62728',  // Red
-      'iAlt': '#9467bd',       // Purple
-      'muligePåVej': '#8c564b' // Brown
+      'oplæring': 'rgb(155, 0, 0)',
+      'skole': 'rgb(168, 168, 0)',
+      'vfo': 'rgb(0, 158, 0)',
+      'delaftale': 'rgb(0, 0, 172)',
+      'iAlt': 'rgb(168, 101, 0)',
+      'muligePåVej': 'rgb(185, 0, 185)',
     };
 
-    const labels = data.map(file => file.file); // fx 'uge 40 - 2024'
+    const labels = data.map(file => file.file);
 
     const datasets = værdityper.map(type => ({
       label: formatLabel(type),
@@ -254,42 +193,25 @@ fetchUploadedFiles(): Promise<void> {
 
     this.chart = new Chart(this.chartRef.nativeElement, {
       type: 'line',
-      data: {
-        labels,
-        datasets,
-      },
+      data: { labels, datasets },
       options: {
         responsive: false,
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-          },
+          legend: { display: true, position: 'top' },
           tooltip: {
             enabled: true,
             callbacks: {
               title: (tooltipItems) => tooltipItems[0]?.label ?? '',
-              label: (ctx) => `${ctx.dataset.label}: ${ctx.raw}`
-            }
+              label: (ctx) => `${ctx.dataset.label}: ${ctx.raw}`,
+            },
           },
         },
         scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Antal elever'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Uge'
-            }
-          }
-        }
-      }
+          y: { beginAtZero: true, title: { display: true, text: 'Antal elever' } },
+          x: { title: { display: true, text: 'Uge' } },
+        },
+      },
     });
 
     function formatLabel(valueType: string): string {
@@ -304,23 +226,21 @@ fetchUploadedFiles(): Promise<void> {
       }
     }
   }
+
   onCheckboxClick(event: MouseEvent, index: number): void {
     if (event.shiftKey && this.lastCheckedIndex !== null) {
-      const [start, end] = [
-        Math.min(this.lastCheckedIndex, index),
-        Math.max(this.lastCheckedIndex, index)
-      ];
-  
+      const [start, end] = [Math.min(this.lastCheckedIndex, index), Math.max(this.lastCheckedIndex, index)];
       for (let i = start; i <= end; i++) {
-        const file = this.files[i];
-        this.tempSelectedFilesMap[file] = true;
+        const year = this.years[i];
+        this.tempSelectedYearsMap[year] = true;
       }
     } else {
-      const file = this.files[index];
-      this.tempSelectedFilesMap[file] = !this.tempSelectedFilesMap[file];
+      const year = this.years[index];
+      this.tempSelectedYearsMap[year] = !this.tempSelectedYearsMap[year];
     }
-  
+
     this.lastCheckedIndex = index;
   }
-  
 }
+
+
