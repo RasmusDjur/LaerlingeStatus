@@ -97,7 +97,7 @@ export class App {
       formData.append('file', file);
 
       try {
-        const response = await fetch('http://localhost:3001/upload', {
+        const response = await fetch('http://10.0.1.210:3001/upload', {
           method: 'POST',
           body: formData,
         });
@@ -112,7 +112,7 @@ export class App {
   }
 
   fetchUploadedYears(): Promise<void> {
-    return fetch('http://localhost:3001/upload')
+    return fetch('http://10.0.1.210:3001/upload')
       .then(response => response.json())
       .then((data: string[]) => {
         this.years = data.sort();
@@ -135,7 +135,7 @@ export class App {
       return;
     }
 
-    fetch('http://localhost:3001/upload/compare', {
+    fetch('http://10.0.1.210:3001/upload/compare', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ years: selectedYears }),

@@ -13,7 +13,7 @@ app.use("/upload", uploadRoutes);   // fx POST /upload, GET /upload, POST /uploa
 app.use("/delete", deleteRoutes);   // fx DELETE /delete/all
 
 const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server is running on http://0.0.0.0:${PORT}`);
 });
 
