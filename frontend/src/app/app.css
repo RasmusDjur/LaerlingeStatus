@@ -174,6 +174,21 @@
     margin: 0 auto;
   }
   
+  .ryd-button {
+    margin: 20px 0 20px 60px;  /* top, right, bottom, left */
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #d15151;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .ryd-button:hover {
+    background-color: #c9302c;
+  }
   
   
   

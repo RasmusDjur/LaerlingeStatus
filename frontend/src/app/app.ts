@@ -229,12 +229,12 @@ fetchUploadedFiles(): Promise<void> {
     });
 
     const farver: { [key: string]: string } = {
-      'oplæring': '#1f77b4',    // Blue
-      'skole': '#ff7f0e',      // Orange
-      'vfo': '#2ca02c',        // Green
-      'delaftale': '#d62728',  // Red
-      'iAlt': '#9467bd',       // Purple
-      'muligePåVej': '#8c564b' // Brown
+      'oplæring':    '#007ACC', // Strong Blue
+      'skole':       '#00B386', // Teal Green
+      'vfo':         '#FFB000', // Amber/Gold
+      'delaftale':   '#E4572E', // Bold Red-Orange
+      'iAlt':        '#6A4C93', // Deep Purple
+      'muligePåVej': '#4C6B8A'  // Steel Gray Blue    
     };
 
     const labels = data.map(file => file.file); // fx 'uge 40 - 2024'
@@ -246,7 +246,7 @@ fetchUploadedFiles(): Promise<void> {
         return stat ? stat[type] : 0;
       }),
       borderColor: farver[type],
-      tension: 0,
+      tension: 0.1,
       fill: false,
     }));
 
